@@ -1,185 +1,83 @@
-import React, { useEffect, useState } from "react";
-import Map from "./Map";
-import FacilitySlider from "./components/FacilitySlider";
+// src/Middle.js
+import React from "react";
 import "./Middle.css";
 
-// ⭐️ 클라이언트 측 거리 계산 함수 (하버사인 공식)
-const getDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371; // 지구 반지름 (km)
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a =
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-};
-
-// 탭 정의
-const TABS = {
-  NEARBY: "nearby",
-  HOT_SIZE: "hot-size",
-  HOT_FREE: "hot-free",
-};
-const SEARCH_RADIUS_KM = 2; // 검색 반경 2km
-
 const Middle = () => {
-  const [facilities, setFacilities] = useState([]); // JSON에서 로드된 전체 시설 목록
-  const [center, setCenter] = useState({ lat: 37.5665, lng: 126.9780 }); // 현재 지도 중심 좌표
-  const [currentTab, setCurrentTab] = useState(TABS.NEARBY); 
-  const [displayFacilities, setDisplayFacilities] = useState([]); // 현재 슬라이더에 표시할 시설 목록
-
-  // 1. JSON 데이터 로드
-  useEffect(() => {
-    fetch("/전국공공시설개방정보표준데이터.json")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.records) {
-             // ⭐️ 위도/경도 파싱 및 유효성 검사
-            const validFacilities = data.records.map(f => {
-                f.lat = parseFloat(f['위도']);
-                f.lng = parseFloat(f['경도']);
-                // 면적/인원수 숫자 파싱 (정렬에 사용)
-                try {
-                    f.area = parseFloat(f['면적'].replace(/,/g, ''));
-                } catch {
-                    f.area = 0;
-                }
-                try {
-                    f.capacity = parseInt(f['수용가능인원수'].replace(/,/g, ''));
-                } catch {
-                    f.capacity = 0;
-                }
-                return f;
-            }).filter(f => !isNaN(f.lat) && !isNaN(f.lng) && f.lat !== 0 && f.lng !== 0);
-            
-            setFacilities(validFacilities);
-        }
-      })
-      .catch((err) => console.error("시설 데이터 로드 실패:", err));
-  }, []);
-
-  // 2. 중심 좌표 또는 탭이 변경될 때마다 시설 목록 업데이트 (클라이언트 필터링/정렬)
-  useEffect(() => {
-    if (facilities.length === 0) return;
-
-    // 2.1. 2km 이내 시설 필터링
-    let filtered = facilities.filter((f) => {
-        return getDistance(center.lat, center.lng, f.lat, f.lng) <= SEARCH_RADIUS_KM;
-    });
-
-    // 2.2. 탭에 따른 정렬/재필터링
-    switch (currentTab) {
-      case TABS.NEARBY:
-        // 내 주변: 거리순 정렬 (가까운 순)
-        filtered.sort((a, b) => {
-            const distA = getDistance(center.lat, center.lng, a.lat, a.lng);
-            const distB = getDistance(center.lat, center.lng, b.lat, b.lng);
-            return distA - distB;
-        });
-        break;
-
-      case TABS.HOT_SIZE:
-        // 핫한 규모: 면적 또는 인원수 중 큰 값으로 내림차순 정렬 (상위 20%만 사용)
-        filtered.sort((a, b) => Math.max(b.area, b.capacity) - Math.max(a.area, a.capacity));
-        filtered = filtered.slice(0, Math.ceil(filtered.length * 0.2));
-        break;
-
-      case TABS.HOT_FREE:
-        // 핫한 무료: 무료 시설만 필터링 후, 면적으로 내림차순 정렬 (상위 20%만 사용)
-        filtered = filtered.filter(f => f['유료사용여부'] !== 'Y' || f['사용료'].trim() === '0');
-        filtered.sort((a, b) => b.area - a.area);
-        filtered = filtered.slice(0, Math.ceil(filtered.length * 0.2));
-        break;
-
-      default:
-        break;
-    }
-    
-    setDisplayFacilities(filtered);
-    
-  }, [center, currentTab, facilities]);
-
-
-  const handleCenterChange = (newCenter) => {
-    setCenter(newCenter);
-  };
-
-  const handleTabChange = (tab) => {
-    setCurrentTab(tab);
-  };
-  
-  // 탭 제목 표시
-  const getTabTitle = () => {
-    let title = "시설 목록";
-    let style = {};
-
-    switch (currentTab) {
-      case TABS.NEARBY:
-        title = `📍 내 주변 시설 (${SEARCH_RADIUS_KM}km 이내)`;
-        style.color = '#1ab2a6';
-        break;
-      case TABS.HOT_SIZE:
-        title = `🔥 핫한 규모 시설 (상위 20%)`;
-        style.color = '#9933ff'; 
-        break;
-      case TABS.HOT_FREE:
-        title = `🆓 핫한 무료 시설 (상위 20%)`;
-        style.color = '#ff9900'; 
-        break;
-      default:
-        break;
-    }
-
-    return (
-        <h4>
-            <span style={style}>{title}</span> 
-            <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: '#888', marginLeft: '10px' }}>
-                ({displayFacilities.length}개)
-            </span>
-        </h4>
-    );
-  };
-
-
   return (
     <div className="middle-container">
-      <div className="map-container">
-        <Map
-          facilities={facilities} 
-          center={center}
-          onCenterChange={handleCenterChange}
-        />
+
+      {/* 1. HERO SECTION */}
+      <div className="hero-section">
+        <div className="hero-content-wrapper">
+          <h1 className="main-title-hothaan">
+            전국의 <span className="highlight-text-hothaan">공공시설</span>을
+            <br />
+            가장 <span className="highlight-text-hothaan">쉽고 빠르게</span> 예약하세요.
+          </h1>
+          <p className="subtitle-hothaan">
+            공공장소 종합 예약 사이트 | 체육, 문화, 교육 시설 실시간 정보 제공
+          </p>
+
+          <div className="cta-group">
+            <button className="cta-button primary">
+              시설 전체 둘러보기
+            </button>
+            <button className="cta-button secondary">
+              내 주변 시설 찾기 📍
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="facility-container">
-        {/* 탭 메뉴 컴포넌트 */}
-        <div className="tab-menu">
-          <button 
-            className={`tab-button ${currentTab === TABS.NEARBY ? 'active' : ''}`}
-            onClick={() => handleTabChange(TABS.NEARBY)}
-          >
-            내 주변
-          </button>
-          <button 
-            className={`tab-button ${currentTab === TABS.HOT_SIZE ? 'active' : ''}`}
-            onClick={() => handleTabChange(TABS.HOT_SIZE)}
-          >
-            핫한 규모
-          </button>
-          <button 
-            className={`tab-button ${currentTab === TABS.HOT_FREE ? 'active' : ''}`}
-            onClick={() => handleTabChange(TABS.HOT_FREE)}
-          >
-            핫한 무료
-          </button>
+      {/* 2. 서비스 요약 섹션 */}
+      <div className="content-section service-summary-section">
+        <div className="section-wrapper">
+          <h2 className="section-title">핵심 서비스 요약</h2>
+          <p className="section-subtitle">공공시설 예약에 필요한 모든 것을 제공합니다.</p>
+
+          <div className="summary-cards">
+            <div className="summary-card">
+              <span className="summary-icon">🔍</span>
+              <h3 className="card-title">실시간 검색 및 위치 기반</h3>
+              <p className="card-text">현재 위치를 기반으로 2km 이내의 시설을 즉시 검색하고 지도로 확인합니다.</p>
+            </div>
+            <div className="summary-card">
+              <span className="summary-icon">✅</span>
+              <h3 className="card-title">간편 예약 및 결제</h3>
+              <p className="card-text">복잡한 절차 없이 시설의 운영 시간과 사용료를 확인 후 바로 예약 및 결제할 수 있습니다.</p>
+            </div>
+            <div className="summary-card">
+              <span className="summary-icon">🔥</span>
+              <h3 className="card-title">인기 시설 추천</h3>
+              <p className="card-text">규모가 크거나 무료 이용이 가능한 인기 시설을 별도로 분류하여 추천합니다.</p>
+            </div>
+          </div>
         </div>
-        
-        {getTabTitle()}
-        
-        <FacilitySlider facilities={displayFacilities} />
       </div>
+
+      {/* 3. 이용 현황 섹션 */}
+      <div className="content-section status-section">
+        <div className="section-wrapper">
+          <h2 className="section-title">누적 이용 현황</h2>
+          <p className="section-subtitle">현재까지 우리 서비스를 통해 이루어진 예약 및 시설 현황입니다.</p>
+
+          <div className="status-metrics">
+            <div className="metric-item">
+              <p className="metric-number">3,200+</p>
+              <p className="metric-label">등록 공공시설 수</p>
+            </div>
+            <div className="metric-item">
+              <p className="metric-number">45만+</p>
+              <p className="metric-label">누적 예약 건수</p>
+            </div>
+            <div className="metric-item">
+              <p className="metric-number">98%</p>
+              <p className="metric-label">사용자 만족도</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
