@@ -1,0 +1,89 @@
+/* src/Header.css */
+
+:root {
+  /* NovaLab Primary Color */
+  --color-primary: #1ab2a6;
+  --color-primary-light: #4ecdc4; 
+  --color-text-muted: #555;
+  --color-card-bg: #ffffff;
+  --color-border: #e0e0e0;
+}
+
+.header-container {
+  width: 100%;
+  /* ⭐️ NovaLab 스타일 Gradient 사용 */
+  background: linear-gradient(90deg, var(--color-primary-light), var(--color-primary));
+  padding: 15px 0;
+  color: white;
+  /* ⭐️ NovaLab 스타일 Shadow */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.logo {
+  font-size: 1.6rem; 
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
+
+.login {
+  font-size: 1rem;
+  color: white;
+  text-decoration: none;
+  /* ⭐️ NovaLab 스타일 Button */
+  background-color: rgba(255, 255, 255, 0.2); 
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 6px 14px;
+  border-radius: 12px; /* rounded-xl */
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.login:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-menu-section {
+  width: 100%;
+  max-width: 1200px;
+  margin: 10px auto 0;
+  padding: 0 20px;
+}
+
+.nav-menu ul {
+  list-style: none;
+  display: flex;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-menu li a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 15px;
+  margin-right: 5px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: opacity 0.2s;
+  /* ⭐️ 둥근 모서리 적용 */
+  border-radius: 8px; 
+}
+
+.nav-menu li a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}

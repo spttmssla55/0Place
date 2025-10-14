@@ -1,0 +1,66 @@
+/* src/Middle.css */
+
+.middle-container {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 80px); /* 헤더 높이(80px) 제외 */
+  /* ⭐️ NovaLab의 섹션 간격과 유사하게 padding 조정 */
+  padding: 10px 0; 
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.map-container {
+  flex: 1;
+  height: 100%;
+  position: relative;
+}
+
+.facility-container {
+  flex: 1;
+  padding: 0 20px; 
+  padding-left: 30px; 
+  display: flex;
+  flex-direction: column;
+}
+
+/* ⭐️ 탭 메뉴 스타일 추가 */
+.tab-menu {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0; 
+    font-weight: 500;
+}
+
+.tab-button:hover {
+    color: var(--color-primary-light);
+}
+
+.tab-button.active {
+    color: var(--color-primary);
+    font-weight: bold;
+    border-bottom: 3px solid var(--color-primary);
+}
+
+/* ⭐️ 제목 스타일 */
+.facility-container h4 {
+    margin-bottom: 15px;
+    text-align: left;
+    font-size: 1.5rem; 
+    font-weight: bold;
+    letter-spacing: -0.025em; 
+}
