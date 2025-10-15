@@ -1,15 +1,15 @@
 // src/App.js
 import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
 import Headerr from "./Headerr";
-import Middle from "./Middle";
-import "./App.css";
+import AppRoutes from "./Route";
 
 function App() {
   return (
-    <div className="App">
+    <Router>
       <Headerr />
-      <Middle />
-    </div>
+      <AppRoutes />
+    </Router>
   );
 }
 

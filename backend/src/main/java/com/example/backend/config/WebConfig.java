@@ -1,3 +1,5 @@
+// src/main/java/com/example/backend/config/WebConfig.java (변동 없음)
+
 package com.example.backend.config;
 
 import org.springframework.context.annotation.Configuration;

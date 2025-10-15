@@ -1,0 +1,113 @@
+:root {
+  --color-brand-green: #38a169;
+  --color-dark-bg: #1e293b;
+  --color-card-bg: #2d3748;
+  --color-text-light: #f8fafc;
+  --color-shadow: rgba(0, 0, 0, 0.25);
+}
+
+.location-page {
+  background-color: var(--color-dark-bg);
+  color: var(--color-text-light);
+  font-family: "Noto Sans KR", sans-serif;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.location-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--color-brand-green);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.location-content {
+  display: flex;
+  gap: 20px;
+  height: 80vh;
+}
+
+/* 지도 영역 */
+.location-map-wrapper {
+  flex: 2;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px var(--color-shadow);
+}
+
+/* 카드 리스트 */
+.location-card-list {
+  flex: 1;
+  background-color: var(--color-card-bg);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px var(--color-shadow);
+}
+
+.location-card-list h3 {
+  color: var(--color-brand-green);
+  margin-bottom: 12px;
+}
+
+.card-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* 카드 */
+.facility-card {
+  background-color: #3b4452;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.facility-card:hover {
+  transform: translateY(-3px);
+}
+
+.facility-card h4 {
+  margin-bottom: 5px;
+  color: #ffffff;
+  font-size: 1.05rem;
+}
+
+.facility-card p {
+  margin: 3px 0;
+  font-size: 0.9rem;
+  color: #e2e8f0;
+}
+
+/* 링크 버튼 */
+.facility-link {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 6px 12px;
+  background-color: var(--color-brand-green);
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.facility-link:hover {
+  background-color: #2f855a;
+}
+
+.no-link {
+  color: #a0aec0;
+  font-size: 0.85rem;
+}
+
+.placeholder {
+  color: #ccc;
+  text-align: center;
+  margin-top: 50%;
+}

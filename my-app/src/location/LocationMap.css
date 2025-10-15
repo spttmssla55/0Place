@@ -1,0 +1,55 @@
+:root {
+  --color-brand-green: #38a169;
+  --color-dark-bg: #1e293b;
+  --color-card-bg: #2d3748;
+  --color-text-light: #f8fafc;
+  --color-shadow-light: rgba(0, 0, 0, 0.2);
+}
+
+.locationmap-container {
+  width: 100%;
+  height: 90vh;
+  background-color: var(--color-dark-bg);
+  color: var(--color-text-light);
+  font-family: "Noto Sans KR", sans-serif;
+  padding: 20px;
+}
+
+.locationmap-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--color-brand-green);
+  margin-bottom: 15px;
+}
+
+.locationmap-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.locationmap-button {
+  background-color: var(--color-brand-green);
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px var(--color-shadow-light);
+}
+
+.locationmap-button:hover {
+  background-color: #2f855a;
+  transform: translateY(-2px);
+}
+
+.locationmap-map {
+  width: 100%;
+  height: 80vh;
+  border-radius: 12px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}

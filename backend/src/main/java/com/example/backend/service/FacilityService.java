@@ -1,3 +1,5 @@
+// src/main/java/com/example/backend/service/FacilityService.java (변동 없음)
+
 package com.example.backend.service;
 
 import com.example.backend.component.FacilityDataLoader;
@@ -17,6 +19,7 @@ public class FacilityService {
 
     // 두 좌표 간의 거리(km) 계산 (하버사인 공식)
     private double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+        // ... (계산 로직은 이전과 동일)
         double dLat = Math.toRadians(lat2 - lat1);
         double dLng = Math.toRadians(lng2 - lng1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -38,7 +41,7 @@ public class FacilityService {
         return filterNearby(lat, lng, distance);
     }
 
-    // 🔴 API 2: 핫한 규모 시설 (2km 이내 + 규모 상위 20%)
+    // API 2: 핫한 규모 시설 (2km 이내 + 규모 상위 20%)
     public List<Facility> findHotSize(double lat, double lng, double distance) {
         List<Facility> nearby = filterNearby(lat, lng, distance);
 
@@ -57,11 +60,16 @@ public class FacilityService {
         return nearby.subList(0, Math.min(top20Percent, nearby.size()));
     }
 
-    // 🔴 API 3: 핫한 무료 시설 (2km 이내 + 유료사용여부 'N')
+    // API 3: 핫한 무료 시설 (2km 이내 + 무료 시설)
     public List<Facility> findHotFree(double lat, double lng, double distance) {
         return filterNearby(lat, lng, distance).stream()
-                // isPaid 필드가 "N"인 경우만 필터링
-                .filter(f -> "N".equalsIgnoreCase(f.getIsPaid()))
+                .filter(f -> "N".equalsIgnoreCase(f.getIsPaid())) // 유료사용여부가 'N'(무료)인 시설만
                 .collect(Collectors.toList());
     }
+
+    // 전체 시설 반환
+    public List<Facility> getAllFacilities() {
+        return dataLoader.getAllFacilities();
+    }
+
 }

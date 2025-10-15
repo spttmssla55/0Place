@@ -1,8 +1,11 @@
 // src/Middle.js
 import React from "react";
 import "./Middle.css";
+import { useNavigate } from "react-router-dom";
 
-const Middle = () => {
+const Middle = ({ onNavigateToMap, onNavigateToRealtime }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="middle-container">
 
@@ -19,10 +22,14 @@ const Middle = () => {
           </p>
 
           <div className="cta-group">
-            <button className="cta-button primary">
+            <button className="cta-button primary"
+            onClick={() => navigate("/realtime")}
+            >
               시설 전체 둘러보기
             </button>
-            <button className="cta-button secondary">
+            <button className="cta-button secondary"
+            onClick={() => navigate("/location")}
+            >
               내 주변 시설 찾기 📍
             </button>
           </div>
@@ -38,8 +45,8 @@ const Middle = () => {
           <div className="summary-cards">
             <div className="summary-card">
               <span className="summary-icon">🔍</span>
-              <h3 className="card-title">실시간 검색 및 위치 기반</h3>
-              <p className="card-text">현재 위치를 기반으로 2km 이내의 시설을 즉시 검색하고 지도로 확인합니다.</p>
+              <h3 className="card-title">위치 기반</h3>
+              <p className="card-text">현재 위치를 기반으로 2km 이내의 시설을 지도로 확인합니다.</p>
             </div>
             <div className="summary-card">
               <span className="summary-icon">✅</span>
@@ -48,8 +55,8 @@ const Middle = () => {
             </div>
             <div className="summary-card">
               <span className="summary-icon">🔥</span>
-              <h3 className="card-title">인기 시설 추천</h3>
-              <p className="card-text">규모가 크거나 무료 이용이 가능한 인기 시설을 별도로 분류하여 추천합니다.</p>
+              <h3 className="card-title">카테고리</h3>
+              <p className="card-text">카테고리별로 분류하여 선택 가능.</p>
             </div>
           </div>
         </div>

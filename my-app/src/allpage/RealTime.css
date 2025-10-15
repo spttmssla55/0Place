@@ -1,0 +1,158 @@
+/* 전체 페이지 */
+.realtime-page {
+  font-family: "Noto Sans KR", sans-serif;
+  padding: 20px;
+  color: #e5e7eb;
+  background: #1f2937;
+  min-height: 100vh;
+}
+
+/* 제목 */
+.realtime-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #f3f4f6;
+}
+
+/* ✅ 시도 / 시군구 선택 영역 (개선 디자인) */
+.realtime-region-select {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.realtime-region-select select {
+  appearance: none; /* 기본 화살표 제거 */
+  padding: 10px 14px;
+  border: 1.5px solid #4b5563;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #2d3748, #374151);
+  color: #f3f4f6;
+  font-size: 15px;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: 160px;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* hover 시 반응 */
+.realtime-region-select select:hover {
+  border-color: #60a5fa;
+  background: linear-gradient(145deg, #374151, #42526a);
+}
+
+/* ✅ 클릭(포커스) 시에도 색 유지 */
+.realtime-region-select select:focus,
+.realtime-region-select select:active {
+  border-color: #93c5fd;
+  background: linear-gradient(145deg, #2d3748, #374151); /* 배경 유지 */
+  color: #000000; /* 글자색 유지 */
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4);
+}
+
+/* 선택 박스 화살표 (가짜 화살표 추가) */
+.realtime-region-select select::-ms-expand {
+  display: none;
+}
+
+.realtime-region-select::after {
+  content: "▼";
+  color: #9ca3af;
+  font-size: 12px;
+  margin-left: -30px;
+  pointer-events: none;
+}
+
+/* 지도 섹션 */
+.realtime-map-section {
+  margin: 0 auto 40px;
+  max-width: 1000px;
+  border: 1px solid #4b5563;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* 카테고리 섹션 */
+.realtime-category-section {
+  margin-bottom: 50px;
+}
+
+/* 카테고리 제목 + 필터 */
+.realtime-category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  color: #f9fafb;
+}
+
+.realtime-category-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* 카드 리스트 */
+.realtime-card-list {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+}
+
+/* 카드 스타일 */
+.realtime-card {
+  flex: 0 0 240px;
+  background: #1f2937;
+  border: 1.5px solid #4b5563;
+  border-radius: 10px;
+  padding: 15px;
+  color: #e5e7eb;
+  transition: all 0.25s ease;
+}
+
+.realtime-card:hover {
+  border-color: #60a5fa;
+  transform: translateY(-4px);
+}
+
+.realtime-card-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f9fafb;
+  margin-bottom: 6px;
+}
+
+.realtime-card-content p {
+  font-size: 13.5px;
+  color: #d1d5db;
+  margin: 4px 0;
+}
+
+.realtime-card-content a {
+  color: #93c5fd;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.realtime-card-content a:hover {
+  text-decoration: underline;
+}
+
+/* 반응형 */
+@media (max-width: 600px) {
+  .realtime-region-select {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .realtime-region-select select {
+    width: 90%;
+  }
+}
