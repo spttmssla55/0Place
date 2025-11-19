@@ -1,0 +1,76 @@
+package com.example.backend.controller;
+
+import com.example.backend.model.Facility;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.InputStream;
+import java.util.*;
+
+@RestController
+@RequestMapping("/api/facilities")
+@CrossOrigin(origins = "http://localhost:3000")
+public class FacilityController {
+
+    @GetMapping
+    public List<Map<String, Object>> getFacilities() {
+        List<Map<String, Object>> result = new ArrayList<>();
+        try {
+            InputStream is = getClass().getResourceAsStream("/전국공공시설개방정보표준데이터.json");
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(is);
+
+            JsonNode records = root.get("records");
+            if (records == null || !records.isArray()) return result;
+
+            for (JsonNode rec : records) {
+                Facility f = mapper.treeToValue(rec, Facility.class);
+                String category = classifyCategory(f);
+                Double lat = safeParseDouble(f.위도);
+                Double lng = safeParseDouble(f.경도);
+                if (lat == null || lng == null) continue;
+
+                // 주소에서 도/시, 구 추출
+                String city = "-", district = "-";
+                if (f.소재지도로명주소 != null && f.소재지도로명주소.split(" ").length >= 2) {
+                    String[] arr = f.소재지도로명주소.split(" ");
+                    city = arr[0];
+                    district = arr[1];
+                }
+
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", n(f.개방시설명));
+                map.put("place", n(f.개방장소명));
+                map.put("type", n(f.개방시설유형구분));
+                map.put("category", category);
+                map.put("address", n(f.소재지도로명주소));
+                map.put("city", city);
+                map.put("district", district);
+                map.put("lat", lat);
+                map.put("lng", lng);
+                map.put("homepage", n(f.홈페이지주소)); // ←★ 이 줄을 꼭 추가!
+                result.add(map);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private String classifyCategory(Facility f) {
+        String joined = (n(f.개방시설명) + " " + n(f.개방장소명) + " " + n(f.개방시설유형구분)).toLowerCase();
+        if (joined.contains("도서관")) return "도서관";
+        if (joined.contains("공원")) return "공원";
+        if (joined.contains("회의실") || joined.contains("세미나") || joined.contains("강의실")) return "회의실";
+        if (joined.contains("체육") || joined.contains("운동장")) return "체육관";
+        if (joined.contains("문화센터")) return "문화센터";
+        if (joined.contains("강당") || joined.contains("공연장")) return "공연장";
+        return "기타";
+    }
+    private String n(String s) { return (s == null || s.trim().isEmpty()) ? "-" : s.trim(); }
+    private Double safeParseDouble(String s) {
+        try { return s == null ? null : Double.parseDouble(s); }
+        catch (Exception e) { return null; }
+    }
+}

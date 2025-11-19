@@ -1,0 +1,109 @@
+.facility-card {
+  background: #2f3d4a;
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.facility-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: rgba(77, 184, 168, 0.3);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card-header h3 {
+  font-size: 18px;
+  color: white;
+  margin: 0;
+  flex: 1;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.distance {
+  background: rgba(94, 204, 135, 0.15);
+  color: #5ecc87;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-left: 12px;
+  border: 1px solid rgba(94, 204, 135, 0.3);
+}
+
+.card-body {
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: flex-start;
+}
+
+.info-row .label {
+  font-weight: 600;
+  color: #90a4ae;
+  min-width: 80px;
+  font-size: 14px;
+}
+
+.info-row .value {
+  color: #cfd8dc;
+  font-size: 14px;
+  flex: 1;
+  line-height: 1.5;
+}
+
+.card-footer {
+  margin-top: auto;
+}
+
+.btn-reserve {
+  display: block;      /* 버튼, a 모두 width:100% 일관적용 */
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #4db8a8 0%, #3ea896 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(77, 184, 168, 0.3);
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn-reserve[disabled] {
+  background: #78909c;
+  color: #cfd8dc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-reserve:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(77, 184, 168, 0.4);
+}
+
+.btn-reserve:active {
+  transform: translateY(0);
+}

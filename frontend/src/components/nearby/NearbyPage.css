@@ -1,0 +1,234 @@
+.nearby-page {
+  background: #3d4f5d;
+  min-height: calc(100vh - 70px);
+  padding: 32px 40px;
+}
+
+/* 페이지 헤더 */
+.page-header {
+  max-width: 1600px;
+  margin: 0 auto 32px;
+}
+
+.page-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.title-highlight {
+  color: #5ecc87;
+}
+
+/* 검색 영역 */
+.search-section {
+  max-width: 1600px;
+  margin: 0 auto 32px;
+}
+
+.search-container {
+  display: flex;
+  gap: 12px;
+  background: #2f3d4a;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 300px;
+  padding: 16px 20px;
+  border: 1px solid #546e7a;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #3d4f5d;
+  color: white;
+  transition: all 0.2s;
+}
+
+.search-input::placeholder {
+  color: #78909c;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #5ecc87;
+  box-shadow: 0 0 0 3px rgba(94, 204, 135, 0.1);
+}
+
+.btn-search {
+  padding: 16px 36px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.btn-search:hover {
+  background: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.btn-location {
+  padding: 16px 28px;
+  background: #5ecc87;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.btn-location:hover {
+  background: #4db876;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(94, 204, 135, 0.3);
+}
+
+/* 메인 컨텐츠 */
+.main-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  gap: 24px;
+  height: calc(100vh - 340px);
+}
+
+/* 지도 영역 */
+.map-wrapper {
+  flex: 1;
+  min-width: 600px;
+  background: #2f3d4a;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.kakao-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+/* 시설 목록 영역 */
+.facilities-wrapper {
+  flex: 0 0 480px;
+  background: #2f3d4a;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.facilities-header {
+  margin-bottom: 24px;
+}
+
+.facilities-header h2 {
+  font-size: 20px;
+  color: white;
+  font-weight: 600;
+}
+
+.facilities-count {
+  color: #5ecc87;
+}
+
+.facilities-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.facility-item {
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+
+.facility-item.selected {
+  animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+.no-data {
+  text-align: center;
+  color: #78909c;
+  padding: 60px 20px;
+  font-size: 16px;
+}
+
+/* 스크롤바 */
+.facilities-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.facilities-list::-webkit-scrollbar-track {
+  background: #3d4f5d;
+  border-radius: 3px;
+}
+
+.facilities-list::-webkit-scrollbar-thumb {
+  background: #546e7a;
+  border-radius: 3px;
+}
+
+.facilities-list::-webkit-scrollbar-thumb:hover {
+  background: #607d8b;
+}
+
+/* 반응형 */
+@media (max-width: 1200px) {
+  .nearby-page {
+    padding: 24px 20px;
+  }
+  
+  .main-content {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .map-wrapper {
+    min-width: 100%;
+    height: 450px;
+  }
+  
+  .facilities-wrapper {
+    flex: 1;
+    max-height: 600px;
+  }
+  
+  .search-container {
+    flex-direction: column;
+  }
+  
+  .search-input {
+    min-width: 100%;
+  }
+  
+  .btn-search,
+  .btn-location {
+    width: 100%;
+  }
+}

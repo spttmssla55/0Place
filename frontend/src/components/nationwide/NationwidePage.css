@@ -1,0 +1,209 @@
+.nationwide-page {
+  background: #3d4f5d;
+  min-height: calc(100vh - 70px);
+  padding: 0;
+}
+
+/* 상단 필터 바 */
+.filter-bar {
+  background: #2f3d4a;
+  padding: 24px 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+}
+
+.dropdown-container {
+  display: flex;
+  gap: 16px;
+}
+
+/* 드롭다운 */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-button {
+  min-width: 200px;
+  padding: 14px 24px;
+  background: #3d4f5d;
+  color: white;
+  border: 1px solid #546e7a;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.dropdown-button:hover:not(:disabled) {
+  border-color: #5ecc87;
+  background: #485f6d;
+}
+
+.dropdown-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropdown-arrow {
+  font-size: 12px;
+  color: #90a4ae;
+  margin-left: 12px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #3d4f5d;
+  border: 1px solid #546e7a;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.dropdown-item {
+  padding: 12px 20px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 15px;
+}
+
+.dropdown-item:hover {
+  background: #485f6d;
+}
+
+.dropdown-item:first-child {
+  color: #5ecc87;
+  font-weight: 600;
+}
+
+/* 스크롤바 */
+.dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+  background: #2f3d4a;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: #546e7a;
+  border-radius: 3px;
+}
+
+/* 지도 섹션 */
+.map-section {
+  height: 500px;
+  padding: 24px 40px;
+  background: #3d4f5d;
+}
+
+.map-section #nationwide-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* 카테고리 섹션 */
+.categories-section {
+  margin-top: 45px; /* ← 지도와 간격 확보! */
+  padding: 0 40px 40px;
+}
+
+.category-row {
+  margin-bottom: 48px;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.category-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.category-count {
+  font-size: 18px;
+  color: #5ecc87;
+  font-weight: 600;
+}
+
+.category-scroll {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  scroll-behavior: smooth;
+}
+
+.category-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.category-scroll::-webkit-scrollbar-track {
+  background: #2f3d4a;
+  border-radius: 4px;
+}
+
+.category-scroll::-webkit-scrollbar-thumb {
+  background: #546e7a;
+  border-radius: 4px;
+}
+
+.category-scroll::-webkit-scrollbar-thumb:hover {
+  background: #607d8b;
+}
+
+.facility-item {
+  min-width: 350px;
+  flex-shrink: 0;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .filter-bar {
+    padding: 20px;
+  }
+  
+  .dropdown-container {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .dropdown-button {
+    width: 100%;
+  }
+  
+  .map-section {
+    height: 400px;
+    padding: 20px;
+  }
+  
+  .categories-section {
+    padding: 0 20px 40px;
+  }
+  
+  .category-header h2 {
+    font-size: 24px;
+  }
+  
+  .facility-item {
+    min-width: 300px;
+  }
+}

@@ -1,0 +1,50 @@
+.location-filter {
+  display: flex;
+  gap: 12px;
+  background: #1e1e1e;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  border: 1px solid #2a2a2a;
+}
+
+.filter-select {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #e0e0e0;
+  background: #2a2a2a;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.filter-select:hover {
+  border-color: #1976d2;
+  background: #333333;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+  background: #333333;
+}
+
+.filter-select option {
+  background: #2a2a2a;
+  color: #e0e0e0;
+}
+
+.filter-select:disabled {
+  background: #1a1a1a;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .location-filter {
+    flex-direction: column;
+  }
+}
