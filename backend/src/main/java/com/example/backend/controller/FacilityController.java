@@ -73,4 +73,54 @@ public class FacilityController {
         try { return s == null ? null : Double.parseDouble(s); }
         catch (Exception e) { return null; }
     }
+
+    @GetMapping("/nearby")
+    public List<Map<String, Object>> getNearbyFacilities(
+        @RequestParam double lat,
+        @RequestParam double lng,
+        @RequestParam double radius
+    ) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        try {
+            InputStream is = getClass().getResourceAsStream("/전국공공시설개방정보표준데이터.json");
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(is);
+            JsonNode records = root.get("records");
+            if (records == null || !records.isArray()) return result;
+
+            for (JsonNode rec : records) {
+                Facility f = mapper.treeToValue(rec, Facility.class);
+                Double flat = safeParseDouble(f.위도);
+                Double flng = safeParseDouble(f.경도);
+                if (flat == null || flng == null) continue;
+                // Haversine 거리 계산
+                double d = getDistance(lat, lng, flat, flng);
+                if (d <= radius) {
+                    Map<String, Object> map = new HashMap<>();
+                    // ... 기초 필드 추가 (name, place, lat, lng 등)
+                    map.put("name", n(f.개방시설명));
+                    map.put("place", n(f.개방장소명));
+                    map.put("category", classifyCategory(f));
+                    map.put("address", n(f.소재지도로명주소));
+                    map.put("lat", flat);
+                    map.put("lng", flng);
+                    // 홈페이지 등 필요시
+                    map.put("homepage", n(f.홈페이지주소));
+                    result.add(map);
+                }
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return result;
+    }
+
+    private double getDistance(double lat1, double lng1, double lat2, double lng2) {
+        double R = 6371;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                Math.sin(dLng/2)*Math.sin(dLng/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
 }

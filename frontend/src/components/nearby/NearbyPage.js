@@ -99,11 +99,12 @@ function NearbyPage() {
         {/* 지도 */}
         <div className="map-wrapper">
           <KakaoMap
-            facilities={facilities}
-            center={location}
-            onMarkerClick={handleMarkerClick}
-            mapId="nearby-map"
-          />
+          facilities={facilities}
+          center={location}
+          onMarkerClick={handleMarkerClick}
+          mapId="nearby-map"
+          myPosition={location}  // ← 내 위치 마커 추가!
+        />
         </div>
 
         {/* 시설 목록 */}

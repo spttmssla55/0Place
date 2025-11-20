@@ -19,9 +19,7 @@ function FacilityCard({ facility, distance }) {
     <div className="facility-card">
       <div className="card-header">
         <h3>{facility.name || '-'}</h3>
-        {distance !== undefined && (
-          <span className="distance">{distance.toFixed(2)}km</span>
-        )}
+        
       </div>
       <div className="card-body">
         <div className="info-row">
