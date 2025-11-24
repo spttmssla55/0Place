@@ -31,4 +31,31 @@ public class UserService {
         return user;
     }
 
+     // 이름 변경
+    public boolean updateUsername(String username, String name) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) return false;
+        user.setName(name);
+        userRepository.save(user);
+        return true;
+    }
+
+    // 비밀번호 변경
+    public boolean changePassword(String username, String oldPass, String newPass) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) return false;
+        if (!user.getPassword().equals(oldPass)) return false;
+        user.setPassword(newPass);
+        userRepository.save(user);
+        return true;
+    }
+
+    // 회원탈퇴
+    public boolean deleteUser(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) return false;
+        userRepository.delete(user);
+        return true;
+    }
+
 }

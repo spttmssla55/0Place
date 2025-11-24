@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 
-function Header({ user, onLoginClick, onLogout }) {
+function Header({ user, onLoginClick, onLogout, onUserClick }) {
   const location = useLocation();
 
   return (
@@ -14,7 +14,7 @@ function Header({ user, onLoginClick, onLogout }) {
             to="/" 
             className={location.pathname === '/' ? 'nav-link active' : 'nav-link'}
           >
-            처음
+            홈
           </Link>
           <Link 
             to="/nearby" 
@@ -26,7 +26,7 @@ function Header({ user, onLoginClick, onLogout }) {
             to="/nationwide" 
             className={location.pathname === '/nationwide' ? 'nav-link active' : 'nav-link'}
           >
-            실시간
+            전국
           </Link>
           <Link 
             to="/bookmark" 
@@ -38,8 +38,15 @@ function Header({ user, onLoginClick, onLogout }) {
         {user
           ? (
             <span>
-              <b>{user.name}</b>님
-              <button style={{ marginLeft: 8 }} onClick={onLogout}>로그아웃</button>
+              <span
+                className="user-name"
+                onClick={onUserClick}
+                style={{ cursor: "pointer", marginRight: 8 }}
+                title="프로필 수정"
+              >
+                <b>{user.name}</b>님
+              </span>
+              <button className="btn-login" onClick={onLogout}>로그아웃</button>
             </span>
           )
           : <button className="btn-login" onClick={onLoginClick}>로그인</button>

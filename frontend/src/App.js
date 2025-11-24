@@ -6,11 +6,15 @@ import NearbyPage from './components/nearby/NearbyPage';
 import NationwidePage from './components/nationwide/NationwidePage';
 import LoginModal from './components/auth/LoginModal';
 import SignupModal from './components/auth/SignupModal';
+import ProfileModal from "./components/auth/ProfileModal";
+
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
+
 
   return (
     <Router>
@@ -19,6 +23,7 @@ function App() {
           user={currentUser}
           onLoginClick={() => setShowLogin(true)}
           onLogout={() => setCurrentUser(null)}
+          onUserClick={() => setShowProfile(true)}
         />
         <Routes>
           <Route path="/" element={<HomePage user={currentUser} />} />
@@ -42,6 +47,14 @@ function App() {
               setShowSignup(false);
               setShowLogin(true);
             }}
+          />
+        )}
+        {showProfile && currentUser && (
+          <ProfileModal
+            user={currentUser}
+            onClose={() => setShowProfile(false)}
+            onProfileUpdate={setCurrentUser}
+            onDeleteUser={() => setCurrentUser(null)}
           />
         )}
       </div>
