@@ -1,25 +1,53 @@
 import React from 'react';
 import './FacilityCard.css';
 
-function FacilityCard({ facility, distance }) {
+function FacilityCard({
+  facility,
+  distance,
+  isBookmarked,
+  onBookmarkToggle,
+  user // 현재 로그인 사용자 정보 props로 전달!
+}) {
   // 홈페이지 주소 정제 함수
   const getHomepageUrl = (homepage) => {
     if (!homepage) return null;
-    // 공백 문자열 및 하이픈(-) 무시
     const cleaned = String(homepage).trim();
     if (!cleaned || cleaned === '-') return null;
-    // http/https 미포함시 붙이기
     if (!/^https?:\/\//i.test(cleaned)) return 'https://' + cleaned;
     return cleaned;
   };
 
   const homepageUrl = getHomepageUrl(facility.homepage);
 
+  // 별(즐겨찾기) 버튼 클릭시: 로그인 체크
+  const handleBookmarkClick = () => {
+    if (!user) {
+      alert("로그인해야 즐겨찾기가 가능합니다.");
+      return;
+    }
+    if (onBookmarkToggle) onBookmarkToggle(facility);
+  };
+
   return (
     <div className="facility-card">
-      <div className="card-header">
-        <h3>{facility.name || '-'}</h3>
-        
+      <div className="card-header" style={{ display: "flex", alignItems: "center" }}>
+        <h3 style={{ flex: 1 }}>{facility.name || '-'}</h3>
+        {/* 즐겨찾기(별) 버튼 추가! */}
+        <button
+          className={isBookmarked ? "bookmark-btn active" : "bookmark-btn"}
+          onClick={handleBookmarkClick}
+          title={isBookmarked ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+          style={{
+            fontSize: 26,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: isBookmarked ? "#ffe277" : "#bbb",
+            marginLeft: 10
+          }}
+        >
+          {isBookmarked ? "⭐" : "☆"}
+        </button>
       </div>
       <div className="card-body">
         <div className="info-row">
@@ -34,6 +62,12 @@ function FacilityCard({ facility, distance }) {
           <span className="label">카테고리:</span>
           <span className="value">{facility.category || '-'}</span>
         </div>
+        {distance !== undefined && (
+          <div className="info-row">
+            <span className="label">거리:</span>
+            <span className="value">{distance.toFixed(2)} km</span>
+          </div>
+        )}
       </div>
       <div className="card-footer">
         {homepageUrl ? (

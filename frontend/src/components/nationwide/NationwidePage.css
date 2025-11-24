@@ -2,6 +2,7 @@
   background: #3d4f5d;
   min-height: calc(100vh - 70px);
   padding: 0;
+  
 }
 
 /* 상단 필터 바 */
@@ -102,8 +103,10 @@
 
 /* 지도 섹션 */
 .map-section {
+  width: 1600px;
   height: 500px;
   padding: 24px 40px;
+  margin: 0 auto 32px;
   background: #3d4f5d;
 }
 
@@ -116,7 +119,8 @@
 
 /* 카테고리 섹션 */
 .categories-section {
-  margin-top: 45px; /* ← 지도와 간격 확보! */
+  width: 1600px;
+  margin: 70px auto 32px;
   padding: 0 40px 40px;
 }
 

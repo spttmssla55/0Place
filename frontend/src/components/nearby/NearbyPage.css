@@ -232,3 +232,32 @@
     width: 100%;
   }
 }
+.suggestion-list {
+  margin: 2px 0 0 0;
+  padding: 0;
+  list-style: none;
+  background: #37474f;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #2224;
+  max-width: 380px;
+  position: absolute;
+  z-index: 20;
+}
+.suggestion-item {
+  padding: 8px 13px;
+  font-size: 15px;
+  color: #e0f7fa;
+  cursor: pointer;
+  border-bottom: 1px solid #4db8a844;
+}
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+.suggestion-item:hover {
+  background: #4db8a822;
+}
+.suggestion-address {
+  display: block;
+  font-size: 13px;
+  color: #90a4ae;
+}

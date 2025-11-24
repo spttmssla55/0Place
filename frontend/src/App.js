@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/common/Header';
 import HomePage from './components/home/HomePage';
@@ -7,14 +7,21 @@ import NationwidePage from './components/nationwide/NationwidePage';
 import LoginModal from './components/auth/LoginModal';
 import SignupModal from './components/auth/SignupModal';
 import ProfileModal from "./components/auth/ProfileModal";
-
+import BookmarkPage from './components/myplace/BookmarkPage';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
+  // 로그인 유지: 새로고침해도 sessionStorage에 값 있으면 로그인 유지
+  useEffect(() => {
+    const savedUser = sessionStorage.getItem("user");
+    if (savedUser) {
+      setCurrentUser(JSON.parse(savedUser));
+    }
+  }, []);
 
   return (
     <Router>
@@ -22,22 +29,29 @@ function App() {
         <Header
           user={currentUser}
           onLoginClick={() => setShowLogin(true)}
-          onLogout={() => setCurrentUser(null)}
+          onLogout={() => {
+            setCurrentUser(null);
+            sessionStorage.removeItem("user");
+          }}
           onUserClick={() => setShowProfile(true)}
         />
         <Routes>
           <Route path="/" element={<HomePage user={currentUser} />} />
           <Route path="/nearby" element={<NearbyPage />} />
           <Route path="/nationwide" element={<NationwidePage />} />
+          <Route path="/bookmark" element={<BookmarkPage />} />
         </Routes>
         {showLogin && (
           <LoginModal
             onClose={() => setShowLogin(false)}
             onSignupClick={() => {
-              setShowLogin(false); // 로그인창 닫고
-              setShowSignup(true); // 회원가입창 열기!
+              setShowLogin(false);
+              setShowSignup(true);
             }}
-            onSuccess={setCurrentUser}
+            onSuccess={(user) => {
+              setCurrentUser(user);
+              sessionStorage.setItem("user", JSON.stringify(user)); // 로그인 정보 저장
+            }}
           />
         )}
         {showSignup && (
@@ -53,8 +67,14 @@ function App() {
           <ProfileModal
             user={currentUser}
             onClose={() => setShowProfile(false)}
-            onProfileUpdate={setCurrentUser}
-            onDeleteUser={() => setCurrentUser(null)}
+            onProfileUpdate={(user) => {
+              setCurrentUser(user);
+              sessionStorage.setItem("user", JSON.stringify(user)); // 프로필 변경도 동기화
+            }}
+            onDeleteUser={() => {
+              setCurrentUser(null);
+              sessionStorage.removeItem("user");
+            }}
           />
         )}
       </div>
