@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Header.css';
 
-function Header() {
+function Header({ user, onLoginClick, onLogout }) {
   const location = useLocation();
 
   return (
@@ -35,7 +35,15 @@ function Header() {
             즐겨찾기
           </Link>
         </nav>
-        <button className="btn-login">로그인</button>
+        {user
+          ? (
+            <span>
+              <b>{user.name}</b>님
+              <button style={{ marginLeft: 8 }} onClick={onLogout}>로그아웃</button>
+            </span>
+          )
+          : <button className="btn-login" onClick={onLoginClick}>로그인</button>
+        }
       </div>
     </header>
   );
