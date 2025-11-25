@@ -6,15 +6,38 @@ import { getNearbyFacilities } from '../../services/facilityService';
 import { calculateDistance } from '../../utils/distanceCalculator';
 import './NearbyPage.css';
 
-function NearbyPage() {
+function NearbyPage({ currentUser }) { // ★ currentUser 꼭 받기!
   const { location, error, loading } = useGeolocation();
   const [facilities, setFacilities] = useState([]);
   const [selectedFacility, setSelectedFacility] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [currentPosition, setCurrentPosition] = useState(null); // ★ "현재 위치" 상태
+  const [currentPosition, setCurrentPosition] = useState(null);
 
-  // 추천 장소 실시간 자동완성
+  // 즐겨찾기 상태 선언
+  const [bookmarked, setBookmarked] = useState([]);
+  useEffect(() => {
+    if (!currentUser) return; // 로그인 유저 기반 즐찾
+    const saved = localStorage.getItem("bookmarkedFacilities_" + currentUser.id);
+    setBookmarked(saved ? JSON.parse(saved) : []);
+  }, [currentUser]);
+
+  const handleBookmarkToggle = (facility) => {
+    if (!currentUser) {
+      alert("로그인해야 즐겨찾기가 가능합니다.");
+      return;
+    }
+    let updated;
+    if (bookmarked.find(f => f.id === facility.id)) {
+      updated = bookmarked.filter(f => f.id !== facility.id);
+    } else {
+      updated = [...bookmarked, facility];
+    }
+    setBookmarked(updated);
+    localStorage.setItem("bookmarkedFacilities_" + currentUser.id, JSON.stringify(updated));
+  };
+
+  // 추천 자동완성
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSuggestions([]);
@@ -34,7 +57,7 @@ function NearbyPage() {
   // 내 위치가 변경되면 "현재 위치"도 내 위치로 자동 이동
   useEffect(() => {
     if (location) {
-      setCurrentPosition(location); // ★ 내 위치와 현재위치 동기화
+      setCurrentPosition(location);
       fetchNearbyFacilities(location.lat, location.lng);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,7 +92,7 @@ function NearbyPage() {
     setSearchQuery(sug.place_name);
     setSuggestions([]);
     const pos = { lat: Number(sug.y), lng: Number(sug.x) };
-    setCurrentPosition(pos); // ★ "현재 위치"를 새 좌표로 설정
+    setCurrentPosition(pos);
     fetchNearbyFacilities(pos.lat, pos.lng);
   };
 
@@ -81,7 +104,7 @@ function NearbyPage() {
       if (status === window.kakao.maps.services.Status.OK && results.length > 0) {
         const sug = results[0];
         const pos = { lat: Number(sug.y), lng: Number(sug.x) };
-        setCurrentPosition(pos); // ★ "현재 위치"를 새 좌표로 설정
+        setCurrentPosition(pos);
         fetchNearbyFacilities(pos.lat, pos.lng);
         setSuggestions([]);
       } else {
@@ -93,7 +116,7 @@ function NearbyPage() {
   // 내 위치(Geolocation)로 다시 복귀
   const handleCurrentLocation = () => {
     if (location) {
-      setCurrentPosition(location); // ★ 작동: 다시 내 GPS 위치로 복귀
+      setCurrentPosition(location);
       fetchNearbyFacilities(location.lat, location.lng);
     }
   };
@@ -101,7 +124,6 @@ function NearbyPage() {
   if (loading) {
     return <div className="loading">위치 정보를 가져오는 중...</div>;
   }
-
   if (error) {
     return <div className="error">위치 정보 오류: {error}</div>;
   }
@@ -155,10 +177,10 @@ function NearbyPage() {
         <div className="map-wrapper">
           <KakaoMap
             facilities={facilities}
-            center={currentPosition}         // ★ 지도 중심
+            center={currentPosition}
             onMarkerClick={handleMarkerClick}
             mapId="nearby-map"
-            myPosition={currentPosition}     // ★ 빨간 마커(현재 위치)
+            myPosition={currentPosition}
           />
         </div>
         {/* 시설 목록 */}
@@ -171,13 +193,16 @@ function NearbyPage() {
           <div className="facilities-list">
             {facilities.length > 0 ? (
               facilities.map(facility => (
-                <div 
+                <div
                   key={facility.id}
                   className={selectedFacility?.id === facility.id ? 'facility-item selected' : 'facility-item'}
                 >
                   <FacilityCard
                     facility={facility}
                     distance={facility.distance}
+                    isBookmarked={!!bookmarked.find(f => f.id === facility.id)}
+                    onBookmarkToggle={handleBookmarkToggle}
+                    user={currentUser}
                   />
                 </div>
               ))

@@ -37,9 +37,10 @@ function App() {
         />
         <Routes>
           <Route path="/" element={<HomePage user={currentUser} />} />
-          <Route path="/nearby" element={<NearbyPage />} />
-          <Route path="/nationwide" element={<NationwidePage />} />
-          <Route path="/bookmark" element={<BookmarkPage />} />
+          <Route path="/nearby" element={<NearbyPage currentUser={currentUser} />} />
+          <Route path="/nationwide" element={<NationwidePage currentUser={currentUser} />} />
+          <Route path="/bookmark" element={<BookmarkPage user={currentUser} />} />
+
         </Routes>
         {showLogin && (
           <LoginModal
