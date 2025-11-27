@@ -6,6 +6,8 @@ import { getNearbyFacilities } from '../../services/facilityService';
 import { calculateDistance } from '../../utils/distanceCalculator';
 import './NearbyPage.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+
 function NearbyPage({ currentUser }) { // ★ currentUser 꼭 받기!
   const { location, error, loading } = useGeolocation();
   const [facilities, setFacilities] = useState([]);
@@ -14,28 +16,77 @@ function NearbyPage({ currentUser }) { // ★ currentUser 꼭 받기!
   const [suggestions, setSuggestions] = useState([]);
   const [currentPosition, setCurrentPosition] = useState(null);
 
-  // 즐겨찾기 상태 선언
-  const [bookmarked, setBookmarked] = useState([]);
+  // ======================= 즐겨찾기 (별) 관련 변경 부분 시작 =======================
+
+  // (시설명 + 제공기관코드) 조합으로 만든 즐겨찾기 키 Set
+  const [bookmarkedKeys, setBookmarkedKeys] = useState(new Set());
+
+  // 로그인한 사용자의 즐겨찾기 목록을 백엔드에서 불러오기
   useEffect(() => {
-    if (!currentUser) return; // 로그인 유저 기반 즐찾
-    const saved = localStorage.getItem("bookmarkedFacilities_" + currentUser.id);
-    setBookmarked(saved ? JSON.parse(saved) : []);
+    if (!currentUser) {
+      setBookmarkedKeys(new Set());
+      return;
+    }
+
+    const fetchFavorites = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/favorites/${currentUser.id}`);
+        if (!res.ok) return;
+        const list = await res.json(); // Favorite 엔티티 리스트 (facilityName, providerCode)
+
+        const keySet = new Set(
+          list.map(fav => `${fav.facilityName}__${fav.providerCode}`)
+        );
+        setBookmarkedKeys(keySet);
+      } catch (e) {
+        console.error('즐겨찾기 로딩 실패:', e);
+      }
+    };
+
+    fetchFavorites();
   }, [currentUser]);
 
-  const handleBookmarkToggle = (facility) => {
+  // 별 클릭 시 즐겨찾기 추가/해제
+  const handleBookmarkToggle = async (facility) => {
     if (!currentUser) {
       alert("로그인해야 즐겨찾기가 가능합니다.");
       return;
     }
-    let updated;
-    if (bookmarked.find(f => f.id === facility.id)) {
-      updated = bookmarked.filter(f => f.id !== facility.id);
-    } else {
-      updated = [...bookmarked, facility];
+
+    const key = `${facility.name}__${facility.providerCode}`;
+    const isBookmarked = bookmarkedKeys.has(key);
+
+    try {
+      if (isBookmarked) {
+        // 즐겨찾기 해제
+        await fetch(
+          `${API_BASE_URL}/api/favorites/remove?userId=${currentUser.id}&facilityName=${encodeURIComponent(facility.name)}`,
+          { method: 'DELETE' }
+        );
+        const newSet = new Set(bookmarkedKeys);
+        newSet.delete(key);
+        setBookmarkedKeys(newSet);
+      } else {
+        // 즐겨찾기 추가
+        await fetch(`${API_BASE_URL}/api/favorites/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            facilityName: facility.name,
+            providerCode: facility.providerCode
+          })
+        });
+        const newSet = new Set(bookmarkedKeys);
+        newSet.add(key);
+        setBookmarkedKeys(newSet);
+      }
+    } catch (e) {
+      console.error('즐겨찾기 처리 실패:', e);
     }
-    setBookmarked(updated);
-    localStorage.setItem("bookmarkedFacilities_" + currentUser.id, JSON.stringify(updated));
   };
+
+  // ======================= 즐겨찾기 (별) 관련 변경 부분 끝 =======================
 
   // 추천 자동완성
   useEffect(() => {
@@ -192,20 +243,23 @@ function NearbyPage({ currentUser }) { // ★ currentUser 꼭 받기!
           </div>
           <div className="facilities-list">
             {facilities.length > 0 ? (
-              facilities.map(facility => (
-                <div
-                  key={facility.id}
-                  className={selectedFacility?.id === facility.id ? 'facility-item selected' : 'facility-item'}
-                >
-                  <FacilityCard
-                    facility={facility}
-                    distance={facility.distance}
-                    isBookmarked={!!bookmarked.find(f => f.id === facility.id)}
-                    onBookmarkToggle={handleBookmarkToggle}
-                    user={currentUser}
-                  />
-                </div>
-              ))
+              facilities.map(facility => {
+                const key = `${facility.name}__${facility.providerCode}`;
+                return (
+                  <div
+                    key={facility.id}
+                    className={selectedFacility?.id === facility.id ? 'facility-item selected' : 'facility-item'}
+                  >
+                    <FacilityCard
+                      facility={facility}
+                      distance={facility.distance}
+                      isBookmarked={bookmarkedKeys.has(key)}
+                      onBookmarkToggle={handleBookmarkToggle}
+                      user={currentUser}
+                    />
+                  </div>
+                );
+              })
             ) : (
               <p className="no-data">시설 데이터를 불러오는 중...</p>
             )}

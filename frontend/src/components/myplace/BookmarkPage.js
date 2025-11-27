@@ -3,22 +3,46 @@ import KakaoMap from '../map/KakaoMap';
 import FacilityCard from '../common/FacilityCard';
 import './BookmarkPage.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+
 function BookmarkPage({ user }) {
   const [bookmarked, setBookmarked] = useState([]);
 
   // 즐겨찾기 로딩(로그인 사용자의 즐겨찾기 시설만!)
   useEffect(() => {
-    if (!user) return;
-    // 서버에서 즐겨찾기 facilities 받아오는 부분/예시로 localStorage 사용
-    const saved = localStorage.getItem("bookmarkedFacilities_" + user.id);
-    setBookmarked(saved ? JSON.parse(saved) : []);
+    if (!user) {
+      setBookmarked([]);
+      return;
+    }
+
+    const fetchFavorites = async () => {
+      try {
+        // 백엔드에서 즐겨찾기 시설 실제 정보 가져오기
+        const res = await fetch(`${API_BASE_URL}/api/favorites/facilities/${user.id}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setBookmarked(data);
+      } catch (e) {
+        console.error('즐겨찾기 시설 로딩 실패:', e);
+      }
+    };
+
+    fetchFavorites();
   }, [user]);
 
   // 즐겨찾기 해제
-  const handleBookmarkToggle = (facility) => {
-    const updated = bookmarked.filter(f => f.id !== facility.id);
-    setBookmarked(updated);
-    localStorage.setItem("bookmarkedFacilities_" + user.id, JSON.stringify(updated));
+  const handleBookmarkToggle = async (facility) => {
+    if (!user) return;
+
+    try {
+      await fetch(
+        `${API_BASE_URL}/api/favorites/remove?userId=${user.id}&facilityName=${encodeURIComponent(facility.name)}`,
+        { method: 'DELETE' }
+      );
+      setBookmarked(prev => prev.filter(f => f.name !== facility.name));
+    } catch (e) {
+      console.error('즐겨찾기 해제 실패:', e);
+    }
   };
 
   // 도/시 그룹별로 즐겨찾기 데이터 묶기
@@ -46,9 +70,14 @@ function BookmarkPage({ user }) {
     return { lat: avgLat, lng: avgLng };
   }, [bookmarked]);
 
+  // 즐겨찾기 여부 체크용 키셋 (시설명 + 제공기관코드)
+  const bookmarkedKeySet = useMemo(() => {
+    return new Set(bookmarked.map(f => `${f.name}__${f.providerCode}`));
+  }, [bookmarked]);
+
   return (
     <div className="bookmark-page">
-      <h2 style={{marginLeft: "650px"}}>⭐ 내 즐겨찾기 공공시설</h2>
+      <h2 style={{ marginLeft: "650px" }}>⭐ 내 즐겨찾기 공공시설</h2>
       <div className="map-section">
         <KakaoMap
           facilities={bookmarked}
@@ -69,16 +98,19 @@ function BookmarkPage({ user }) {
                 <span style={{ color: "#aaa" }}>({facilities.length}개)</span>
               </div>
               <div className="group-cards">
-                {facilities.map(facility => (
-                  <FacilityCard
-                    key={facility.id}
-                    facility={facility}
-                    distance={facility.distance}
-                    isBookmarked={true}
-                    onBookmarkToggle={handleBookmarkToggle}
-                    user={user}
-                  />
-                ))}
+                {facilities.map((facility, idx) => {
+                  const key = `${facility.name}__${facility.providerCode}`;
+                  return (
+                    <FacilityCard
+                      key={`${facility.name}-${facility.lat}-${facility.lng}-${idx}`}
+                      facility={facility}
+                      distance={facility.distance}
+                      isBookmarked={bookmarkedKeySet.has(key)}
+                      onBookmarkToggle={handleBookmarkToggle}
+                      user={user}
+                    />
+                  );
+                })}
               </div>
             </div>
           ))

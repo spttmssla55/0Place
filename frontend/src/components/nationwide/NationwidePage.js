@@ -4,6 +4,8 @@ import FacilityCard from '../common/FacilityCard';
 import { getAllFacilities } from '../../services/facilityService';
 import './NationwidePage.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+
 function NationwidePage({ currentUser }) {
   const [allFacilities, setAllFacilities] = useState([]);
   const [filteredFacilities, setFilteredFacilities] = useState([]);
@@ -13,30 +15,81 @@ function NationwidePage({ currentUser }) {
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [isDistrictDropdownOpen, setIsDistrictDropdownOpen] = useState(false);
 
-  // 즐겨찾기 구현
-  const [bookmarked, setBookmarked] = useState([]);
+  // ======================= 즐겨찾기 (별) 관련 변경 부분 시작 =======================
+
+  // (userId, facilityName, providerCode) 기준으로 만든 키 Set
+  const [bookmarkedKeys, setBookmarkedKeys] = useState(new Set());
+
+  // 로그인한 사용자의 즐겨찾기 목록을 백엔드에서 불러오기
   useEffect(() => {
-    if (!currentUser) return;
-    const saved = localStorage.getItem("bookmarkedFacilities_" + currentUser.id);
-    setBookmarked(saved ? JSON.parse(saved) : []);
+    if (!currentUser) {
+      setBookmarkedKeys(new Set());
+      return;
+    }
+
+    const fetchFavorites = async () => {
+      try {
+        // /api/favorites/{userId} → Favorite 엔티티 리스트 (facilityName, providerCode 포함)
+        const res = await fetch(`${API_BASE_URL}/api/favorites/${currentUser.id}`);
+        if (!res.ok) return;
+        const list = await res.json();
+
+        const keySet = new Set(
+          list.map(fav => `${fav.facilityName}__${fav.providerCode}`)
+        );
+        setBookmarkedKeys(keySet);
+      } catch (e) {
+        console.error('즐겨찾기 로딩 실패:', e);
+      }
+    };
+
+    fetchFavorites();
   }, [currentUser]);
 
-  const handleBookmarkToggle = (facility) => {
+  // 별 클릭 시 즐겨찾기 추가/해제
+  const handleBookmarkToggle = async (facility) => {
     if (!currentUser) {
       alert("로그인해야 즐겨찾기가 가능합니다.");
       return;
     }
-    let updated;
-    if (bookmarked.find(f => f.id === facility.id)) {
-      updated = bookmarked.filter(f => f.id !== facility.id);
-    } else {
-      updated = [...bookmarked, facility];
+
+    // FacilityController에서 내려온 name / providerCode 사용
+    const key = `${facility.name}__${facility.providerCode}`;
+    const isBookmarked = bookmarkedKeys.has(key);
+
+    try {
+      if (isBookmarked) {
+        // 즐겨찾기 해제
+        await fetch(
+          `${API_BASE_URL}/api/favorites/remove?userId=${currentUser.id}&facilityName=${encodeURIComponent(facility.name)}`,
+          { method: 'DELETE' }
+        );
+        const newSet = new Set(bookmarkedKeys);
+        newSet.delete(key);
+        setBookmarkedKeys(newSet);
+      } else {
+        // 즐겨찾기 추가
+        await fetch(`${API_BASE_URL}/api/favorites/add`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            facilityName: facility.name,
+            providerCode: facility.providerCode
+          })
+        });
+        const newSet = new Set(bookmarkedKeys);
+        newSet.add(key);
+        setBookmarkedKeys(newSet);
+      }
+    } catch (e) {
+      console.error('즐겨찾기 처리 실패:', e);
     }
-    setBookmarked(updated);
-    localStorage.setItem("bookmarkedFacilities_" + currentUser.id, JSON.stringify(updated));
   };
 
-  // 전국 광역시·도/구 세팅(생략: 그대로 유지)
+  // ======================= 즐겨찾기 (별) 관련 변경 부분 끝 =======================
+
+  // 전국 광역시·도/구 세팅 (기존 그대로)
   const cities = [
     '서울', '부산', '대구', '인천', '대전', '울산', '세종',
     '경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'
@@ -52,7 +105,7 @@ function NationwidePage({ currentUser }) {
     if (!city) return [];
     // 이하 자동 district 추출 로직 동일
     // ...
-    return []; //구현 내용 그대로 들어가면 됩니다
+    return []; // 구현 내용 그대로 들어가면 됩니다
   };
 
   useEffect(() => {
@@ -214,17 +267,24 @@ function NationwidePage({ currentUser }) {
                 <span className="category-count">({categoryFacilities.length}개)</span>
               </div>
               <div className="category-scroll">
-                {categoryFacilities.map((facility, idx) => (
-                  <div key={`${facility.name}-${facility.lat}-${facility.lng}-${idx}`} className="facility-item">
-                    <FacilityCard
-                      facility={facility}
-                      distance={facility.distance}
-                      isBookmarked={!!bookmarked.find(f => f.id === facility.id)}
-                      onBookmarkToggle={handleBookmarkToggle}
-                      user={currentUser}
-                    />
-                  </div>
-                ))}
+                {categoryFacilities.map((facility, idx) => {
+                  const key = `${facility.name}__${facility.providerCode}`;
+                  return (
+                    <div
+                      key={`${facility.name}-${facility.lat}-${facility.lng}-${idx}`}
+                      className="facility-item"
+                    >
+                      <FacilityCard
+                        facility={facility}
+                        distance={facility.distance}
+                        // 여기서 카드별 별 상태 결정
+                        isBookmarked={bookmarkedKeys.has(key)}
+                        onBookmarkToggle={handleBookmarkToggle}
+                        user={currentUser}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );

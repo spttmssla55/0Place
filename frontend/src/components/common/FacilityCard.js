@@ -6,7 +6,7 @@ function FacilityCard({
   distance,
   isBookmarked,
   onBookmarkToggle,
-  user // 현재 로그인 사용자 정보 props로 전달!
+  user
 }) {
   // 홈페이지 주소 정제 함수
   const getHomepageUrl = (homepage) => {
@@ -19,7 +19,7 @@ function FacilityCard({
 
   const homepageUrl = getHomepageUrl(facility.homepage);
 
-  // 별(즐겨찾기) 버튼 클릭시: 로그인 체크
+  // 별(즐겨찾기) 버튼 클릭시: 로그인 체크 + 콜백
   const handleBookmarkClick = () => {
     if (!user) {
       alert("로그인해야 즐겨찾기가 가능합니다.");
@@ -32,7 +32,8 @@ function FacilityCard({
     <div className="facility-card">
       <div className="card-header" style={{ display: "flex", alignItems: "center" }}>
         <h3 style={{ flex: 1 }}>{facility.name || '-'}</h3>
-        {/* 즐겨찾기(별) 버튼 추가! */}
+
+        {/* 즐겨찾기(별) 버튼 */}
         <button
           className={isBookmarked ? "bookmark-btn active" : "bookmark-btn"}
           onClick={handleBookmarkClick}
@@ -49,6 +50,7 @@ function FacilityCard({
           {isBookmarked ? "⭐" : "☆"}
         </button>
       </div>
+
       <div className="card-body">
         <div className="info-row">
           <span className="label">시설명:</span>
@@ -69,6 +71,7 @@ function FacilityCard({
           </div>
         )}
       </div>
+
       <div className="card-footer">
         {homepageUrl ? (
           <a
